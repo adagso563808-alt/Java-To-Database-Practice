@@ -11,8 +11,6 @@ public class Login_Frame extends JFrame {
 
     private JTextField usernameField;
     private JPasswordField passwordField;
-    private final String USERNAME = "admin";
-    private final String PASSWORD = "1234";
 
     public Login_Frame() {
 
