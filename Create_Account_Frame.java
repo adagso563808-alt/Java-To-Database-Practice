@@ -42,9 +42,9 @@ public class Create_Account_Frame extends JFrame {
 
     private void registerUser() {
         String username = usernameField.getText();
-        String password = new String(passwordField.getPassword());
+        char[] passwordChar = passwordField.getPassword();
 
-        if (username.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || passwordChar.length == 0) {
             JOptionPane.showMessageDialog(this, "Please fill in all fields.");
             return;
         }
@@ -58,6 +58,7 @@ public class Create_Account_Frame extends JFrame {
         String sqlQuery = "INSERT INTO Users (Username, Password) VALUES(?,?);";
 
         try (PreparedStatement pStatement = connection.prepareStatement(sqlQuery)) {
+            String password = new String(passwordChar);
             pStatement.setString(1, username);
             pStatement.setString(2, password);
             pStatement.executeUpdate();
