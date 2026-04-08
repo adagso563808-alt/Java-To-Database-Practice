@@ -44,8 +44,13 @@ public class Create_Account_Frame extends JFrame {
         String username = usernameField.getText();
         char[] passwordChar = passwordField.getPassword();
 
-        if (username.isEmpty() || passwordChar.length == 0) {
-            JOptionPane.showMessageDialog(this, "Please fill in all fields.");
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Username is empty!");
+            return;
+        }
+
+        if (passwordChar.length() == 0) {
+            JOptionPane.showMessageDialog(this, "Password is empty!");
             return;
         }
 
