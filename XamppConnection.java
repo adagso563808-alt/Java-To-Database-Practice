@@ -7,13 +7,14 @@ import javax.swing.JOptionPane;
 
 public class XamppConnection {
 
+    private final String url = "jdbc:mysql://localhost:3306/School";
+    private final String username = "root";
+    private final String password = "";
+
     public static Connection connection() {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/School";
-            String username = "root";
-            String password = "";
             Connection connection = DriverManager.getConnection(url, username, password);
             return connection;
         } catch (ClassNotFoundException|SQLException e) {
