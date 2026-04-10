@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,7 +23,7 @@ public class Create_Account_Frame extends JFrame {
 
     public Create_Account_Frame() {
         setSize(280, 300);
-        setTitle("Login");
+        setTitle("Create Account");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -55,7 +57,7 @@ public class Create_Account_Frame extends JFrame {
 
     }
 
-    private void register() {
+    private boolean register() {
 
         String username = usernameField.getText();
         String emailAddress = emailAddressField.getText();
@@ -64,40 +66,61 @@ public class Create_Account_Frame extends JFrame {
 
         if (username.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Username is empty!");
-            return;
+            return false;
         } else if (passwordChar.length == 0) {
             JOptionPane.showMessageDialog(null, "Password is empty!");
-            return;
+            return false;
         } else if (emailAddress.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Email address is empty!");
-            return;
+            return false;
         } else if (contactNumber.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Contact number is empty!");
-            return;
+            return false;
         }
 
         Connection connection = XamppConnection.connection();
         if (connection == null) {
             JOptionPane.showMessageDialog(null, "Failed to connect database.");
-            return;
+            return false;
         }
 
-        String sql = "INSERT INTO Users(Username, Password, Email_Address, Contact_Number) VALUES(?,?,?,?);";
+        try {
+            String checkSql = "SELECT * FROM Users WHERE Username = ?";
+            PreparedStatement checkPs = connection.prepareStatement(checkSql);
+            checkPs.setString(1, username);
+            ResultSet rs = checkPs.executeQuery();
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(this, "Username already exists!");
+                return false;
+            }
+
+            String insertSql = "INSERT INTO Users (Username, Password, Email_Address, Contact_Number) VALUES (?, ?, ?, ?)";
+            PreparedStatement ps = connection.prepareStatement(insertSql);
+
             String password = new String(passwordChar);
             String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
             ps.setString(1, username);
             ps.setString(2, hashedPassword);
             ps.setString(3, emailAddress);
             ps.setString(4, contactNumber);
+
             ps.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Account created successfully!");
-            ps.close();
+
+            JOptionPane.showMessageDialog(this, "Account created successfully!");
+
             usernameField.setText("");
             passwordField.setText("");
+            emailAddressField.setText("");
+            contactNumberField.setText("");
+
+            Arrays.fill(passwordChar, '\0');
+
+            return true;
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
+        return false;
     }
 }
