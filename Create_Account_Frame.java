@@ -50,11 +50,11 @@ public class Create_Account_Frame extends JFrame {
         add(register);
 
         register.addActionListener(e -> {
-            register();
-            new Login_Frame().setVisible(true);
-            dispose();
+            if (register()) {
+                new Login_Frame().setVisible(true);
+                dispose();
+            }
         });
-
     }
 
     private boolean register() {
